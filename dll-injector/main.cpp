@@ -22,20 +22,20 @@ int wmain(int argc, wchar_t* argv[]) {
 		return -1;
 	}
 
-	if (!PrintProcesses()) {
-		return 1;
-	}
+	//if (!PrintProcesses()) {
+	//	return 1;
+	//}
 
-	printf("\nEnter PID to target: ");
-	scanf_s("%lu", &targetPid);
+	//printf("\nEnter PID to target: ");
+	//scanf_s("%lu", &targetPid);
 
-	if (!VerifyPID(targetPid)) {
-		return 1;
-	}
+	//if (!VerifyPID(targetPid)) {
+	//	return 1;
+	//}
 
-	if (!GetRemoteProcessHandle(targetPid, &hProcess)) {
-		return 1;
-	}
+	//if (!GetRemoteProcessHandle(targetPid, &hProcess)) {
+	//	return 1;
+	//}
 
 	if (!InjectDllToRemoteProcess(hProcess, argv[1])) {
 		return 1;

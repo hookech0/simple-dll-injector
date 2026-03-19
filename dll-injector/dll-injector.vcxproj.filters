@@ -66,6 +66,9 @@
     <ClCompile Include="inject.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="handles.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\imgui\imgui.h">
@@ -99,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="handles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

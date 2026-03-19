@@ -1,7 +1,11 @@
 #pragma once
-#include <windows.h>
+#include <string>
+#include <vector>
+#include <cstdint>
 
+struct ProcessInfo {
+    uint32_t pid;
+    std::string name;
+};
 
-BOOL PrintProcesses();
-BOOL VerifyPID(IN DWORD dwPID);
-BOOL GetRemoteProcessHandle(IN DWORD dwPID, OUT HANDLE* hProcess);
+std::vector<ProcessInfo> GetRunningProcesses();
