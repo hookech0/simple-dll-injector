@@ -142,6 +142,7 @@
     <ClCompile Include="inject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="procenum.cpp" />
+    <ClCompile Include="utils.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="handles.h" />
     <ClInclude Include="inject.h" />
     <ClInclude Include="procenum.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\..\..\Downloads\IBMPlexMono-Regular.ttf" />

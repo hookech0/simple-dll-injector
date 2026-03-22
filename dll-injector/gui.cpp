@@ -1,6 +1,9 @@
 #include <windows.h>
 #include <cstdint>
 #include <algorithm>
+#include <commdlg.h>
+
+#pragma comment(lib, "comdlg32.lib")
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -8,10 +11,8 @@
 
 #include "procenum.h"
 #include "inject.h"
-
-
-
-
+#include "handles.h"
+#include "utils.h"
 
 void RenderUI() {
 
@@ -25,21 +26,29 @@ void RenderUI() {
     window_flags |= ImGuiWindowFlags_NoTitleBar;
 
     static std::vector<ProcessInfo> processes;
-    static int selectedProcess = -1;
-    static char searchBuf[128] = "";
-    static bool loaded = false;
+    static int g_selectedProcess = -1;
+    static char g_searchBuf[128] = "";
+    static bool g_loaded = false;
+
+    
+    // Inject button
+    static bool g_clicked = false;
+    static std::wstring g_dllFile = L"";
+  
+
 
     ImGui::Begin("DLL Injector", nullptr, window_flags);
 
-    if (ImGui::Button("Refresh") || !loaded) {
+    if (ImGui::Button("Refresh") || !g_loaded) {
         processes = GetRunningProcesses();
-        selectedProcess = -1;
-        loaded = true;
+        g_selectedProcess = -1;
+        g_loaded = true;
+        g_clicked = false;
     }
 
     ImGui::SameLine();
     ImGui::SetNextItemWidth(200.0f);
-    ImGui::InputText("Search", searchBuf, sizeof(searchBuf));
+    ImGui::InputText("Search", g_searchBuf, sizeof(g_searchBuf));
 
     ImGui::Separator();
 
@@ -48,7 +57,7 @@ void RenderUI() {
         ImGuiTableFlags_RowBg |
         ImGuiTableFlags_ScrollY |
         ImGuiTableFlags_SizingFixedFit,
-        ImVec2(0, 600))) // table size
+        ImVec2(0, 600)))
     {
         ImGui::TableSetupScrollFreeze(0, 1); // Keep header visible when scrolling
         ImGui::TableSetupColumn("PID", ImGuiTableColumnFlags_WidthFixed, 70.0f);
@@ -59,9 +68,9 @@ void RenderUI() {
             const auto& proc = processes[i];
 
             // Search filter
-            if (searchBuf[0] != '\0') {
+            if (g_searchBuf[0] != '\0') {
                 std::string haystack = proc.name;
-                std::string needle = searchBuf;
+                std::string needle = g_searchBuf;
                 std::transform(haystack.begin(), haystack.end(), haystack.begin(), ::tolower);
                 std::transform(needle.begin(), needle.end(), needle.begin(), ::tolower);
                 if (haystack.find(needle) == std::string::npos)
@@ -73,12 +82,12 @@ void RenderUI() {
             ImGui::TableSetColumnIndex(0);
             char pidStr[16];
             snprintf(pidStr, sizeof(pidStr), "%u", proc.pid);
-            bool selected = (selectedProcess == i);
+            bool selected = (g_selectedProcess == i);
             if (ImGui::Selectable(pidStr, selected,
                 ImGuiSelectableFlags_SpanAllColumns,
                 ImVec2(0, 0)))
             {
-                selectedProcess = i;
+                g_selectedProcess = i;
             }
 
             ImGui::TableSetColumnIndex(1);
@@ -88,60 +97,59 @@ void RenderUI() {
         ImGui::EndTable();
     }
 
-	if (selectedProcess >= 0 && selectedProcess < (int)processes.size()) {
-		const auto& sel = processes[selectedProcess];
+	if (g_selectedProcess >= 0 && g_selectedProcess < (int)processes.size()) {
+		const auto& sel = processes[g_selectedProcess];
 		ImGui::Text("Selected [%u] %s", sel.pid, sel.name.c_str());
 
-		if (ImGui::Button("Inject")) {
-			// injector logic here
-		}
+
+        if (ImGui::Button("Inject")) {
+            g_clicked = true;
+        }
+
+        if (g_clicked) {
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            ImGui::BeginChild("Inject Panel", ImVec2(0, 100), ImGuiChildFlags_Borders);
+
+            ImGui::Text("Select DLL to Inject");
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            if (ImGui::Button("Browse"))
+                selectFile(g_dllFile);
+
+            ImGui::SameLine();
+
+            if (g_dllFile.empty())
+                ImGui::TextDisabled("No DLL selected...");
+            else
+                ImGui::Text("%s", WideToUtf8(g_dllFile).c_str());
+
+            ImGui::Spacing();
+
+            if (g_dllFile.empty()) {
+                ImGui::BeginDisabled();
+                ImGui::Button("Execute");
+                ImGui::EndDisabled();
+            }
+            else {
+                if (ImGui::Button("Execute")) {
+                    
+                    HANDLE hProcess = nullptr;
+
+                    // verify PID
+                    // get handle
+                    // inject DLL
+
+                }
+            }
+            ImGui::EndChild();
+        }
+
 	}
 	else {
 		ImGui::TextDisabled("No process selected");
 	}
 	ImGui::End();
 }
-
-// Selectable -- not in a table
-
-//	ImGui::BeginChild("Process List", ImVec2(0, 300), true);
-//
-//	for (int i = 0; i < (int)processes.size(); i++) {
-//		const auto& proc = processes[i];
-//
-//		if (searchBuf[0] != '\0') {
-//			std::string pname = proc.name;
-//			std::string psearch = searchBuf;
-//			std::transform(pname.begin(), pname.end(), pname.begin(), ::tolower);
-//			std::transform(psearch.begin(), psearch.end(), psearch.begin(), ::tolower);
-//			if (pname.find(psearch) == std::string::npos) {
-//				continue;
-//			}
-//		}
-//
-//		char label[256];
-//		snprintf(label, sizeof(label), "%-8u %s", proc.pid, proc.name.c_str());
-//
-//		bool selected = (selectedProcess == i);
-//		if (ImGui::Selectable(label, selected))
-//			selectedProcess = i;
-//	}
-//	ImGui::EndChild();
-//
-//	
-//	if (selectedProcess >= 0 && selectedProcess < (int)processes.size()) {
-//		const auto& sel = processes[selectedProcess];
-//		ImGui::Text("Selected [%u] %s", sel.pid, sel.name.c_str());
-//
-//		if (ImGui::Button("Inject")) {
-//			// injector logic here
-//		}
-//	}
-//	else {
-//		ImGui::TextDisabled("No process selected");
-//	}
-//
-//	ImGui::End();
-//
-//}
-

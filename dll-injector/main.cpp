@@ -17,10 +17,10 @@ int wmain(int argc, wchar_t* argv[]) {
 	DWORD dwProcessId = NULL;
 	HANDLE hProcess = NULL;
 
-	if (argc < 2) {
-		wprintf(L"[!] Usage: \"%s\" <Complete Dll Payload Path>\n", argv[0]);
-		return -1;
-	}
+	//if (argc < 2) {
+	//	wprintf(L"[!] Usage: \"%s\" <Complete Dll Payload Path>\n", argv[0]);
+	//	return -1;
+	//}
 
 	//if (!PrintProcesses()) {
 	//	return 1;
