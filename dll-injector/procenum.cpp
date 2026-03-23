@@ -1,11 +1,9 @@
 #include <windows.h>
-#include <stdio.h>
 #include <TlHelp32.h>
-#include <string>
-#include <vector>
-#include <cstdint>
 
 #include "utils.h"
+#include "logger.h"
+
 
 
 struct ProcessInfo {
@@ -20,7 +18,8 @@ std::vector<ProcessInfo> GetRunningProcesses() {
 
 	hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (hSnapShot == INVALID_HANDLE_VALUE) {
-		printf("[!] CreateToolhelp32Snapshot Failed With Error : %d \n", GetLastError());
+		//printf("[!] CreateToolhelp32Snapshot Failed With Error : %d \n", GetLastError());
+		Log(LogLevel::Error, "[ENUM] CreateToolhelp32Snapshot Failed With Error: " + std::to_string(GetLastError()));
 		return result;
 	}
 
@@ -28,7 +27,8 @@ std::vector<ProcessInfo> GetRunningProcesses() {
 	pe32.dwSize = sizeof(pe32);
 
 	if (!Process32First(hSnapShot, &pe32)) {
-		printf("[!] Process32First Failed With Error : %d \n", GetLastError());
+		//printf("[!] Process32First Failed With Error : %d \n", GetLastError());
+		Log(LogLevel::Error, "[ENUM] Process32First Failed With Error: " + std::to_string(GetLastError()));
 		CloseHandle(hSnapShot);
 		return result;
 	}

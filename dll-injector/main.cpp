@@ -11,38 +11,11 @@
 
 
 
-int wmain(int argc, wchar_t* argv[]) {
+int wmain() {
 
-	DWORD targetPid = 0;
-	DWORD dwProcessId = NULL;
-	HANDLE hProcess = NULL;
+	//DWORD targetPid = 0;
+	//DWORD dwProcessId = NULL;
+	//HANDLE hProcess = NULL;
 
-	//if (argc < 2) {
-	//	wprintf(L"[!] Usage: \"%s\" <Complete Dll Payload Path>\n", argv[0]);
-	//	return -1;
-	//}
-
-	//if (!PrintProcesses()) {
-	//	return 1;
-	//}
-
-	//printf("\nEnter PID to target: ");
-	//scanf_s("%lu", &targetPid);
-
-	//if (!VerifyPID(targetPid)) {
-	//	return 1;
-	//}
-
-	//if (!GetRemoteProcessHandle(targetPid, &hProcess)) {
-	//	return 1;
-	//}
-
-	if (!InjectDllToRemoteProcess(hProcess, argv[1])) {
-		return 1;
-	}
-
-	CloseHandle(hProcess);
-	printf("[#] Press <Enter> to Quit...");
-	getchar();
 
 }

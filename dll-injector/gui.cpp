@@ -25,16 +25,13 @@ void RenderUI() {
     window_flags |= ImGuiWindowFlags_NoResize;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
 
+    // Static vars
     static std::vector<ProcessInfo> processes;
     static int g_selectedProcess = -1;
     static char g_searchBuf[128] = "";
     static bool g_loaded = false;
-
-    
-    // Inject button
     static bool g_clicked = false;
     static std::wstring g_dllFile = L"";
-  
 
 
     ImGui::Begin("DLL Injector", nullptr, window_flags);
@@ -67,7 +64,7 @@ void RenderUI() {
         for (int i = 0; i < (int)processes.size(); i++) {
             const auto& proc = processes[i];
 
-            // Search filter
+            // Search bar function
             if (g_searchBuf[0] != '\0') {
                 std::string haystack = proc.name;
                 std::string needle = g_searchBuf;
@@ -110,6 +107,7 @@ void RenderUI() {
             ImGui::Separator();
             ImGui::Spacing();
 
+            // Child to hold the file browser "browse" button, and "execute" button
             ImGui::BeginChild("Inject Panel", ImVec2(0, 100), ImGuiChildFlags_Borders);
 
             ImGui::Text("Select DLL to Inject");
@@ -137,11 +135,16 @@ void RenderUI() {
                 if (ImGui::Button("Execute")) {
                     
                     HANDLE hProcess = nullptr;
+                    
+                    // Gets a handle to the selected process
+                    if (!GetRemoteProcessHandle(sel.pid, &hProcess)) {
+                        return;
+                    }
 
-                    // verify PID
-                    // get handle
-                    // inject DLL
-
+                    // Trys to inject the selected dll into the selected process
+                    if (!InjectDllToRemoteProcess(hProcess, (LPWSTR)g_dllFile.c_str())) {
+                        return;
+                    }
                 }
             }
             ImGui::EndChild();

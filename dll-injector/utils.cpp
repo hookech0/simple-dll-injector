@@ -18,7 +18,7 @@ std::string WideToUtf8(const std::wstring& wide) {
 BOOL selectFile(std::wstring& selectedFile) {
 
 	static wchar_t filePath[MAX_PATH] = L"";
-	OPENFILENAME ofn;
+	OPENFILENAME ofn = { 0 };
 
 	ZeroMemory(&ofn, sizeof(ofn));
 
