@@ -1,3 +1,3 @@
 #pragma once
 
-void RenderUI();
+void RenderUI(HWND hwnd);

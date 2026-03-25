@@ -16,6 +16,8 @@ static IDXGISwapChain*			g_pSwapChain = nullptr;
 static bool                     g_SwapChainOccluded = false;
 static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
 static ID3D11RenderTargetView*	g_mainRenderTargetView = nullptr;
+HWND g_hwnd = nullptr;
+
 bool g_AppRunning = true;
 
 bool CreateDeviceD3D(HWND hWnd);
@@ -24,7 +26,6 @@ void CreateRenderTarget();
 void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-void RenderUI();
 
 int main(int, char**) {
 
@@ -73,6 +74,8 @@ int main(int, char**) {
 		wc.hInstance,
 		nullptr
 	);
+
+	g_hwnd = hwnd;
 
 	if (!CreateDeviceD3D(hwnd)) {
 		CleanupDeviceD3D();
@@ -193,7 +196,7 @@ int main(int, char**) {
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		RenderUI();
+		RenderUI(hwnd);
 
 		g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
 		g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, (float*)&clear_color);

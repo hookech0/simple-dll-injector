@@ -37,12 +37,12 @@ BOOL GetRemoteProcessHandle(IN DWORD dwPID, OUT HANDLE* hProcess) {
 				Log(LogLevel::Error, "[HANDLE] OpenProcess Failed With Error: " + std::to_string(GetLastError()));
 				break;
 			}
+
+			Log(LogLevel::Info, "Obtained handle to: [" + std::to_string(pe32.th32ProcessID) + "] " + WideToUtf8(pe32.szExeFile));
+			break;
 		}
 	} while (Process32Next(hSnapShot, &pe32));
 
-	Log(LogLevel::Info, "Obtained Handle to: " + WideToUtf8(pe32.szExeFile));
-	//printf("[i] Obtained handle to %ls\n", pe32.szExeFile);
-	//printf("\t- 0x%p\n", hProcess);
 
 _EndOfFunc:
 	if (hSnapShot != NULL)
