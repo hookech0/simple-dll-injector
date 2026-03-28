@@ -26,17 +26,18 @@ void RenderUI(HWND hwnd) {
     window_flags |= ImGuiWindowFlags_NoResize;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
 
-    static std::vector<ProcessInfo> processes;
-    static DWORD g_selectedPid = 0;
-    static char g_searchBuf[128] = "";
-    static bool g_loaded = false;
+    static std::vector<ProcessInfo> processes; 
+    static DWORD g_selectedPid = 0;    
+    static char g_searchBuf[128] = ""; 
+    static bool g_loaded = false;    
     static bool g_clicked = false;
     static bool g_showlog = false;
-    static std::wstring g_dllFile = L"";
+    static std::wstring g_dllPath = L"";
 
     // Main window
 
     ImGui::Begin("DLL Injector", nullptr, window_flags);
+
 
     if (ImGui::Button("Refresh") || !g_loaded) {
         processes = GetRunningProcesses();
@@ -53,7 +54,7 @@ void RenderUI(HWND hwnd) {
     if (ImGui::Button(g_showlog ? "Hide Log" : "Show Log"))
         g_showlog = !g_showlog;
 
-    // X button, I don't want the win32 window bar
+    // Close/X button, I don't want the win32 window bar
     float buttonWidth = 25.0f;
     float spacing = ImGui::GetStyle().ItemSpacing.x;
     float rightEdge = ImGui::GetWindowWidth() - (buttonWidth * 2);
@@ -66,16 +67,18 @@ void RenderUI(HWND hwnd) {
 
     ImGui::Separator();
 
-    // Process table
+    // ---- Process Table ---- //
 
-    if (ImGui::BeginTable("ProcessTable", 2,
-        ImGuiTableFlags_Borders |
-        ImGuiTableFlags_RowBg |
-        ImGuiTableFlags_ScrollY |
-        ImGuiTableFlags_SizingFixedFit,
-        ImVec2(0, 600)))
-    {
-        ImGui::TableSetupScrollFreeze(0, 1); // Keep header visible when scrolling
+    ImGuiTableFlags table_flags = 0;
+    table_flags |= ImGuiTableFlags_Borders;
+    table_flags |= ImGuiTableFlags_RowBg;
+    table_flags |= ImGuiTableFlags_ScrollY;
+    table_flags |= ImGuiTableFlags_SizingFixedFit;
+
+
+    if (ImGui::BeginTable("ProcessTable", 2, table_flags, ImVec2(0, 600))) {
+        
+        ImGui::TableSetupScrollFreeze(0, 1); // Keep table header visible when scrolling
         ImGui::TableSetupColumn("PID", ImGuiTableColumnFlags_WidthFixed, 70.0f);
         ImGui::TableSetupColumn("Process Name", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableHeadersRow();
@@ -114,8 +117,9 @@ void RenderUI(HWND hwnd) {
         ImGui::EndTable();
     }
 
-    
-    // Select a process and inject it //
+    // --------------------------------------- //
+
+    // ---- Process Selection & Injection ---- //
 
     // Select by PID
     auto it = std::find_if(processes.begin(), processes.end(),
@@ -131,6 +135,7 @@ void RenderUI(HWND hwnd) {
             g_clicked = true;
         }
 
+        // If the inject button is clicked, open file browsing child window
         if (g_clicked) {
             ImGui::Separator();
             ImGui::Spacing();
@@ -143,23 +148,24 @@ void RenderUI(HWND hwnd) {
             ImGui::Spacing();
 
             if (ImGui::Button("Browse"))
-                selectFile(g_dllFile);
+                selectFile(g_dllPath);
 
             ImGui::SameLine();
 
-            if (g_dllFile.empty())
+            if (g_dllPath.empty())
                 ImGui::TextDisabled("No DLL selected...");
             else
-                ImGui::Text("%s", WideToUtf8(g_dllFile).c_str());
+                ImGui::Text("%s", WideToUtf8(g_dllPath).c_str());
 
             ImGui::Spacing();
 
-            if (g_dllFile.empty()) {
+            if (g_dllPath.empty()) {
                 ImGui::BeginDisabled();
                 ImGui::Button("Execute");
                 ImGui::EndDisabled();
             }
             else {
+                // --- Process Injection --- //
                 if (ImGui::Button("Execute")) {
 
                     Log(LogLevel::Info, "Attempting to inject into PID: " + std::to_string(sel.pid) + " " + sel.name);
@@ -169,7 +175,7 @@ void RenderUI(HWND hwnd) {
                         return;
                     }
 
-                    if (!InjectDllToRemoteProcess(hProcess, (LPWSTR)g_dllFile.c_str())) {
+                    if (!InjectDllToRemoteProcess(hProcess, (LPWSTR)g_dllPath.c_str())) {
                         return;
                     }
                 }
@@ -181,8 +187,13 @@ void RenderUI(HWND hwnd) {
 		ImGui::TextDisabled("No process selected");
 	}
 
+    // --------------------------------------- //
+
+
+    // --- Logger Window --- //
 
     // New window for the logger, opens with g_showlog
+    // Maybe move to a tab instead of a new window
 
     if (g_showlog) {
         ImGui::SetNextWindowSize(ImVec2(600, 200), ImGuiCond_FirstUseEver);
@@ -198,17 +209,17 @@ void RenderUI(HWND hwnd) {
 
         ImGui::Separator();
 
-        ImGui::BeginChild("LogEntries", ImVec2(0, 0), ImGuiChildFlags_None);
+        ImGui::BeginChild("Logger", ImVec2(0, 0), ImGuiChildFlags_None);
 
         for (const auto& msg : GetLog()) {
             if (msg.find("[+]") == 0)
-                ImGui::TextColored(ImVec4(0.31f, 0.98f, 0.48f, 1.0f), "%s", msg.c_str());
+                ImGui::TextColored(ImVec4(0.31f, 0.98f, 0.48f, 1.0f), "%s", msg.c_str()); //  Green
             else if (msg.find("[!]") == 0)
-                ImGui::TextColored(ImVec4(1.00f, 0.33f, 0.33f, 1.0f), "%s", msg.c_str());
+                ImGui::TextColored(ImVec4(1.00f, 0.33f, 0.33f, 1.0f), "%s", msg.c_str()); // Red
             else if (msg.find("[~]") == 0)
-                ImGui::TextColored(ImVec4(1.00f, 0.72f, 0.42f, 1.0f), "%s", msg.c_str());
+                ImGui::TextColored(ImVec4(1.00f, 0.72f, 0.42f, 1.0f), "%s", msg.c_str()); // Orangish
             else
-                ImGui::Text("%s", msg.c_str());
+                ImGui::Text("%s", msg.c_str()); // No colour
         }
         // auto scroll to bottom
         if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
@@ -221,4 +232,4 @@ void RenderUI(HWND hwnd) {
 	ImGui::End();
 }
 
-
+// --------------------------------------- //

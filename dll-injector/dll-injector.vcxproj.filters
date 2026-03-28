@@ -51,28 +51,25 @@
     <ClCompile Include="external\imgui\backends\imgui_impl_win32.cpp">
       <Filter>external\imgui\backends</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="gui.cpp">
+    <ClCompile Include="gui\gui.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="window.cpp">
+    <ClCompile Include="gui\window.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="procenum.cpp">
+    <ClCompile Include="src\utils.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
-    <ClCompile Include="inject.cpp">
+    <ClCompile Include="src\handles.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
-    <ClCompile Include="handles.cpp">
+    <ClCompile Include="src\inject.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
-    <ClCompile Include="utils.cpp">
+    <ClCompile Include="src\logger.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
-    <ClCompile Include="logger.cpp">
+    <ClCompile Include="src\procenum.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,22 +98,22 @@
     <ClInclude Include="external\imgui\imconfig.h">
       <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui.h">
+    <ClInclude Include="src\handles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="procenum.h">
+    <ClInclude Include="src\inject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inject.h">
+    <ClInclude Include="src\logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="handles.h">
+    <ClInclude Include="src\procenum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils.h">
+    <ClInclude Include="src\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="logger.h">
+    <ClInclude Include="gui\gui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

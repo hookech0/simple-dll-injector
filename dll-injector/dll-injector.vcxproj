@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui\backends;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\jn\source\repos\dll-injector\dll-injector\src;C:\Users\jn\source\repos\dll-injector\dll-injector\gui;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui\backends;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -93,7 +93,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui\backends;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\jn\source\repos\dll-injector\dll-injector\src;C:\Users\jn\source\repos\dll-injector\dll-injector\gui;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui\backends;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -108,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui\backends;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\jn\source\repos\dll-injector\dll-injector\src;C:\Users\jn\source\repos\dll-injector\dll-injector\gui;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui\backends;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -125,7 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui\backends;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\jn\source\repos\dll-injector\dll-injector\src;C:\Users\jn\source\repos\dll-injector\dll-injector\gui;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui\backends;C:\Users\jn\source\repos\dll-injector\dll-injector\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -141,14 +141,13 @@
     <ClCompile Include="external\imgui\imgui_draw.cpp" />
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="gui.cpp" />
-    <ClCompile Include="handles.cpp" />
-    <ClCompile Include="inject.cpp" />
-    <ClCompile Include="logger.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="procenum.cpp" />
-    <ClCompile Include="utils.cpp" />
-    <ClCompile Include="window.cpp" />
+    <ClCompile Include="gui\gui.cpp" />
+    <ClCompile Include="gui\window.cpp" />
+    <ClCompile Include="src\handles.cpp" />
+    <ClCompile Include="src\inject.cpp" />
+    <ClCompile Include="src\logger.cpp" />
+    <ClCompile Include="src\procenum.cpp" />
+    <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\imgui\backends\imgui_impl_dx11.h" />
@@ -159,12 +158,12 @@
     <ClInclude Include="external\imgui\imstb_rectpack.h" />
     <ClInclude Include="external\imgui\imstb_textedit.h" />
     <ClInclude Include="external\imgui\imstb_truetype.h" />
-    <ClInclude Include="gui.h" />
-    <ClInclude Include="handles.h" />
-    <ClInclude Include="inject.h" />
-    <ClInclude Include="logger.h" />
-    <ClInclude Include="procenum.h" />
-    <ClInclude Include="utils.h" />
+    <ClInclude Include="gui\gui.h" />
+    <ClInclude Include="src\handles.h" />
+    <ClInclude Include="src\inject.h" />
+    <ClInclude Include="src\logger.h" />
+    <ClInclude Include="src\procenum.h" />
+    <ClInclude Include="src\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\..\..\Downloads\IBMPlexMono-Regular.ttf" />

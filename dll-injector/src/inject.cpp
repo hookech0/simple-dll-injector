@@ -18,41 +18,30 @@ BOOL InjectDllToRemoteProcess(IN HANDLE hProcess, IN LPWSTR DllName) {
 
 	pfnLoadLibraryW LoadLibraryWAddr = (pfnLoadLibraryW)GetProcAddress(GetModuleHandle(L"kernel32.dll"), "LoadLibraryW");
 	if (LoadLibraryWAddr == NULL) {
-		//printf("\t[!] GetProcAddress Failed with Error: %d\n", GetLastError());
 		Log(LogLevel::Error, "GetProcAddress Failed With Error: " + std::to_string(GetLastError()));
 		bState = FALSE; goto _EndOfFunc;
 	}
 
 	pAddress = VirtualAllocEx(hProcess, NULL, dwSizeToWrite, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (pAddress == NULL) {
-		//printf("\t[!] VirtualAllocEx Failed with Error: %d\n", GetLastError());
 		Log(LogLevel::Error, "VirtualAllocEx Failed With Error: " + std::to_string(GetLastError()));
 		bState = FALSE; goto _EndOfFunc;
 	}
 
-	//printf("[i] pAddress Allocated\n");
-	//printf("\t-  0x%p\n", pAddress);
-
 	if (!WriteProcessMemory(hProcess, pAddress, DllName, dwSizeToWrite, &lpNumberOfBytesWritten) || lpNumberOfBytesWritten != dwSizeToWrite) {
-		//printf("\t[!] WriteProcessMemory Failed with Error: %d\n", GetLastError());
 		Log(LogLevel::Error, "WriteProcessMemory Failed With Error: " + std::to_string(GetLastError()));
 		bState = FALSE; goto _EndOfFunc;
 	}
 
 	Log(LogLevel::Success, "Successfully Wrote " + std::to_string(dwSizeToWrite) + " Bytes");
-	//printf("[i] Successfully wrote %d bytes\n", dwSizeToWrite);
-	//printf("[#] Press <Enter> to run DLL...");
-	//getchar();
 
 	hThread = CreateRemoteThread(hProcess, NULL, NULL, (LPTHREAD_START_ROUTINE)LoadLibraryWAddr, pAddress, NULL, NULL);
 	if (hThread == NULL) {
-		//printf("\t[!] CreateRemoteThread Failed with Error: %d\n", GetLastError());
 		Log(LogLevel::Error, "CreateRemoteThread Failed With Error: " + std::to_string(GetLastError()));
 		bState = FALSE; goto _EndOfFunc;
 	}
 
 	Log(LogLevel::Success, "DLL Written and Executed From Remote Process");
-	//printf("[+] Done\n");
 
 _EndOfFunc:
 	if (hThread) {

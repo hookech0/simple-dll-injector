@@ -14,18 +14,14 @@ BOOL GetRemoteProcessHandle(IN DWORD dwPID, OUT HANDLE* hProcess) {
 
 	hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
 	if (hSnapShot == INVALID_HANDLE_VALUE) {
-		//printf("[!] CreateToolhelp32Snapshot Failed With Error : %d \n", GetLastError());
 		Log(LogLevel::Error, "[HANDLE] CreateToolhelp32Snapshot Failed With Error: " + std::to_string(GetLastError()));
 		goto _EndOfFunc;
 	}
 
 	if (!Process32First(hSnapShot, &pe32)) {
-		//printf("[!] Process32First Failed With Error : %d \n", GetLastError());
 		Log(LogLevel::Error, "[HANDLE] CreateToolhelp32Snapshot Failed With Error: " + std::to_string(GetLastError()));
 		goto _EndOfFunc;
 	}
-
-	//printf("[i] Obtaining a handle to the process...\n");
 
 	do {
 		if (pe32.th32ProcessID == dwPID) {
@@ -33,7 +29,6 @@ BOOL GetRemoteProcessHandle(IN DWORD dwPID, OUT HANDLE* hProcess) {
 			*hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID);
 
 			if (*hProcess == NULL) {
-				//printf("\t[!] OpenProcess Failed With Error: %d\n", GetLastError());
 				Log(LogLevel::Error, "[HANDLE] OpenProcess Failed With Error: " + std::to_string(GetLastError()));
 				break;
 			}
