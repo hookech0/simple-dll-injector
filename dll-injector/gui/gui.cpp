@@ -26,10 +26,10 @@ void RenderUI(HWND hwnd) {
     window_flags |= ImGuiWindowFlags_NoResize;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
 
-    static std::vector<ProcessInfo> processes; 
-    static DWORD g_selectedPid = 0;    
-    static char g_searchBuf[128] = ""; 
-    static bool g_loaded = false;    
+    static std::vector<ProcessInfo> processes;
+    static DWORD g_selectedPid = 0;
+    static char g_searchBuf[128] = "";
+    static bool g_loaded = false;
     static bool g_clicked = false;
     static bool g_showlog = false;
     static std::wstring g_dllPath = L"";
@@ -45,10 +45,16 @@ void RenderUI(HWND hwnd) {
         g_loaded = true;
         g_clicked = false;
     }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Refresh process list"); // Not sure if I really need a tooltip for this 
+    }
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(200.0f);
-    ImGui::InputText("Search", g_searchBuf, sizeof(g_searchBuf));
+    ImGui::SetNextItemWidth(230.0f);
+    ImGui::InputText("\t", g_searchBuf, sizeof(g_searchBuf)); // \t hides the label all together. I would prefer the label to be "inside" the text input field
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Search for a process name");
+    }
 
     ImGui::SameLine();
     if (ImGui::Button(g_showlog ? "Hide Log" : "Show Log"))
@@ -77,7 +83,7 @@ void RenderUI(HWND hwnd) {
 
 
     if (ImGui::BeginTable("ProcessTable", 2, table_flags, ImVec2(0, 600))) {
-        
+
         ImGui::TableSetupScrollFreeze(0, 1); // Keep table header visible when scrolling
         ImGui::TableSetupColumn("PID", ImGuiTableColumnFlags_WidthFixed, 70.0f);
         ImGui::TableSetupColumn("Process Name", ImGuiTableColumnFlags_WidthStretch);
@@ -108,7 +114,7 @@ void RenderUI(HWND hwnd) {
             {
                 g_selectedPid = proc.pid;
                 Log(LogLevel::Info, "Selected PID: " + std::to_string(g_selectedPid) + " " + proc.name);
-            
+
             }
 
             ImGui::TableSetColumnIndex(1);
@@ -128,7 +134,7 @@ void RenderUI(HWND hwnd) {
     if (it != processes.end()) {
         const auto& sel = *it;
 
-		ImGui::Text("Selected [%u] %s", sel.pid, sel.name.c_str());
+        ImGui::Text("Selected [%u] %s", sel.pid, sel.name.c_str());
 
         // Inject / file browse window
         if (ImGui::Button("Inject")) {
@@ -170,7 +176,7 @@ void RenderUI(HWND hwnd) {
 
                     Log(LogLevel::Info, "Attempting to inject into PID: " + std::to_string(sel.pid) + " " + sel.name);
                     HANDLE hProcess = nullptr;
-                    
+
                     if (!GetRemoteProcessHandle(sel.pid, &hProcess)) {
                         return;
                     }
@@ -182,10 +188,10 @@ void RenderUI(HWND hwnd) {
             }
             ImGui::EndChild();
         }
-	}
-	else {
-		ImGui::TextDisabled("No process selected");
-	}
+    }
+    else {
+        ImGui::TextDisabled("No process selected");
+    }
 
     // --------------------------------------- //
 
@@ -195,41 +201,45 @@ void RenderUI(HWND hwnd) {
     // New window for the logger, opens with g_showlog
     // Maybe move to a tab instead of a new window
 
-    if (g_showlog) {
-        ImGui::SetNextWindowSize(ImVec2(600, 200), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowPos(ImVec2(20, 500), ImGuiCond_FirstUseEver);
 
-        ImGui::Begin("Log", &g_showlog);
+//    if (g_showlog) {
+//        ImGui::SetNextWindowSize(ImVec2(600, 200), ImGuiCond_FirstUseEver);
+//        ImGui::SetNextWindowPos(ImVec2(20, 500), ImGuiCond_FirstUseEver);
+//
+//        ImGui::Begin("Log", &g_showlog);
+//
+//        if (ImGui::Button("Clear"))
+//            ClearLog();
+//
+//        ImGui::SameLine();
+//        ImGui::TextDisabled("%d entries", (int)GetLog().size());
+//
+//        ImGui::Separator();
+//
+//        ImGui::BeginChild("Logger", ImVec2(0, 0), ImGuiChildFlags_None);
+//
+//        for (const auto& msg : GetLog()) {
+//            if (msg.find("[+]") == 0)
+//                ImGui::TextColored(ImVec4(0.31f, 0.98f, 0.48f, 1.0f), "%s", msg.c_str()); //  Green
+//            else if (msg.find("[!]") == 0)
+//                ImGui::TextColored(ImVec4(1.00f, 0.33f, 0.33f, 1.0f), "%s", msg.c_str()); // Red
+//            else if (msg.find("[~]") == 0)
+//                ImGui::TextColored(ImVec4(1.00f, 0.72f, 0.42f, 1.0f), "%s", msg.c_str()); // Orangish
+//            else
+//                ImGui::Text("%s", msg.c_str()); // No colour
+//        }
+//        // auto scroll to bottom
+//        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+//            ImGui::SetScrollHereY(1.0f);
+//
+//        ImGui::EndChild();
+//        ImGui::End();
+//    }
+//
+// 
+// 
 
-        if (ImGui::Button("Clear"))
-            ClearLog();
-
-        ImGui::SameLine();
-        ImGui::TextDisabled("%d entries", (int)GetLog().size());
-
-        ImGui::Separator();
-
-        ImGui::BeginChild("Logger", ImVec2(0, 0), ImGuiChildFlags_None);
-
-        for (const auto& msg : GetLog()) {
-            if (msg.find("[+]") == 0)
-                ImGui::TextColored(ImVec4(0.31f, 0.98f, 0.48f, 1.0f), "%s", msg.c_str()); //  Green
-            else if (msg.find("[!]") == 0)
-                ImGui::TextColored(ImVec4(1.00f, 0.33f, 0.33f, 1.0f), "%s", msg.c_str()); // Red
-            else if (msg.find("[~]") == 0)
-                ImGui::TextColored(ImVec4(1.00f, 0.72f, 0.42f, 1.0f), "%s", msg.c_str()); // Orangish
-            else
-                ImGui::Text("%s", msg.c_str()); // No colour
-        }
-        // auto scroll to bottom
-        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-            ImGui::SetScrollHereY(1.0f);
-
-        ImGui::EndChild();
-        ImGui::End();
-    }
+// --------------------------------------- //
 
 	ImGui::End();
 }
-
-// --------------------------------------- //
