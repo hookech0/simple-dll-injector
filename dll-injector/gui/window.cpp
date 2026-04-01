@@ -10,6 +10,10 @@
 
 // --- Mostly boilerplate from Imgui Win32/DX11 example code --- //
 
+ImFont* g_fontJetBrains = nullptr;
+ImFont* g_fontCascadiaCode = nullptr;
+ImFont* g_fontProggy = nullptr;
+
 static ID3D11Device*			g_pd3dDevice = nullptr;
 static ID3D11DeviceContext*		g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain*			g_pSwapChain = nullptr;
@@ -94,7 +98,9 @@ int main(int, char**) {
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
-	io.Fonts->AddFontFromFileTTF("external/fonts/JetBrainsMono-Italic.ttf"); // TODO: need to make sure this is the proper way to handle external fonts
+	ImFont* g_fontJetBrains = io.Fonts->AddFontFromFileTTF("external/fonts/JetBrainsMono-Light.ttf", 16.0f);
+	ImFont* g_fontCascadiaCode = io.Fonts->AddFontFromFileTTF("external/fonts/CascadiaCode.ttf", 16.0f);
+	ImFont* g_fontProggy = io.Fonts->AddFontFromFileTTF("external/fonts/ProggyCleanSZNerdFont-Regular.ttf", 16.0f);
 
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);

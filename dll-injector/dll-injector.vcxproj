@@ -167,8 +167,10 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\..\..\Downloads\IBMPlexMono-Regular.ttf" />
+    <Font Include="external\fonts\CascadiaCode.ttf" />
     <Font Include="external\fonts\JetBrainsMono-Italic.ttf" />
     <Font Include="external\fonts\JetBrainsMono-Light.ttf" />
+    <Font Include="external\fonts\ProggyCleanSZNerdFont-Regular.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -127,5 +127,7 @@
     <Font Include="external\fonts\JetBrainsMono-Italic.ttf">
       <Filter>external\fonts</Filter>
     </Font>
+    <Font Include="external\fonts\CascadiaCode.ttf" />
+    <Font Include="external\fonts\ProggyCleanSZNerdFont-Regular.ttf" />
   </ItemGroup>
 </Project>
