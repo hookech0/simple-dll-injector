@@ -16,7 +16,6 @@ static IDXGISwapChain*			g_pSwapChain = nullptr;
 static bool                     g_SwapChainOccluded = false;
 static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
 static ID3D11RenderTargetView*	g_mainRenderTargetView = nullptr;
-HWND g_hwnd = nullptr;
 
 ImFont* g_fontJetBrains = nullptr;
 ImFont* g_fontCascadiaCode = nullptr;
@@ -60,7 +59,7 @@ int main(int, char**) {
 		100,
 		100,
 		(int)(1280 * main_scale),
-		(int)(800 * main_scale),
+		(int)(900 * main_scale),
 		nullptr,
 		nullptr,
 		wc.hInstance,

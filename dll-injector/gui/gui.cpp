@@ -17,7 +17,6 @@
 
 void RenderUI() {
 
-
     ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
 
@@ -27,8 +26,8 @@ void RenderUI() {
 
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_NoCollapse;
-    //window_flags |= ImGuiWindowFlags_NoMove;
-    //window_flags |= ImGuiWindowFlags_NoResize;
+    window_flags |= ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoResize;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
 
     static std::vector<ProcessInfo> processes;
@@ -106,7 +105,7 @@ void RenderUI() {
                         ImVec2(0, 0)))
                     {
                         g_selectedPid = proc.pid;
-                        Log(LogLevel::Info, "Selected PID: " + std::to_string(g_selectedPid) + " " + proc.name);
+                        Log(LogLevel::Info, "Selected PID: [" + std::to_string(g_selectedPid) + "] " + proc.name);
 
                     }
 
@@ -163,11 +162,16 @@ void RenderUI() {
                         ImGui::Button("Execute");
                         ImGui::EndDisabled();
                     }
+
                     else {
                         // --- Process Injection --- //
                         if (ImGui::Button("Execute")) {
 
-                            Log(LogLevel::Info, "Attempting to inject into PID: " + std::to_string(sel.pid) + " " + sel.name);
+                            ImGui::SameLine();
+                            //ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(0.0f, 0.0f), "Running.."); // Not necessary
+
+                            Log(LogLevel::Info, "Selected " + std::string(WideToUtf8(g_dllPath).c_str()) + " to inject");
+                            Log(LogLevel::Info, "Attempting to inject into PID: [" + std::to_string(sel.pid) + "] " + sel.name);
                             HANDLE hProcess = nullptr;
 
                             if (!GetRemoteProcessHandle(sel.pid, &hProcess)) {
