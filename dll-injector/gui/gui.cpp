@@ -15,7 +15,7 @@
 #include "handles.h"
 #include "utils.h"
 
-void RenderUI(HWND hwnd) {
+void RenderUI() {
 
 
     ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
@@ -27,8 +27,8 @@ void RenderUI(HWND hwnd) {
 
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_NoCollapse;
-    window_flags |= ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoResize;
+    //window_flags |= ImGuiWindowFlags_NoMove;
+    //window_flags |= ImGuiWindowFlags_NoResize;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
 
     static std::vector<ProcessInfo> processes;
@@ -63,17 +63,6 @@ void RenderUI(HWND hwnd) {
             if (ImGui::IsItemHovered()) {
                 ImGui::SetTooltip("Search for a process name");
             }
-
-            // Close/X button, I don't want the win32 window bar
-            float buttonWidth = 25.0f;
-            float spacing = ImGui::GetStyle().ItemSpacing.x;
-            float rightEdge = ImGui::GetWindowWidth() - (buttonWidth * 2);
-
-            ImGui::SameLine();
-            ImGui::SetCursorPosX(rightEdge);
-
-            if (ImGui::Button("X", ImVec2(buttonWidth, 0)))
-                ::PostQuitMessage(0);
 
             ImGui::Separator();
 
@@ -199,7 +188,6 @@ void RenderUI(HWND hwnd) {
             ImGui::EndTabItem();
         }
 
-        // TODO: "X" doesn't appear on new tab, need to rework that
         if (ImGui::BeginTabItem("Log")) {
             
             if (ImGui::Button("Clear Log")) {

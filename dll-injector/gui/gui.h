@@ -1,6 +1,6 @@
 #pragma once
 
-void RenderUI(HWND hwnd);
+void RenderUI();
 
 extern ImFont* g_fontJetBrains;
 extern ImFont* g_fontCascadiaCode;

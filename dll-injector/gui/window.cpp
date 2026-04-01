@@ -10,10 +10,6 @@
 
 // --- Mostly boilerplate from Imgui Win32/DX11 example code --- //
 
-ImFont* g_fontJetBrains = nullptr;
-ImFont* g_fontCascadiaCode = nullptr;
-ImFont* g_fontProggy = nullptr;
-
 static ID3D11Device*			g_pd3dDevice = nullptr;
 static ID3D11DeviceContext*		g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain*			g_pSwapChain = nullptr;
@@ -21,6 +17,10 @@ static bool                     g_SwapChainOccluded = false;
 static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
 static ID3D11RenderTargetView*	g_mainRenderTargetView = nullptr;
 HWND g_hwnd = nullptr;
+
+ImFont* g_fontJetBrains = nullptr;
+ImFont* g_fontCascadiaCode = nullptr;
+ImFont* g_fontProggy = nullptr;
 
 bool g_AppRunning = true;
 
@@ -33,7 +33,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int main(int, char**) {
 
-	//ImGui_ImplWin32_EnableDpiAwareness();
+	float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
 
 	WNDCLASSEXW wc = {
 
@@ -47,39 +47,25 @@ int main(int, char**) {
 		nullptr,
 		nullptr,
 		nullptr,
-		L"DLL 'jector",
+		L"DLL Injector",
 		nullptr
 	};
 
 	::RegisterClassExW(&wc);
 
-	//HWND hwnd = ::CreateWindowW(
-	//	wc.lpszClassName,
-	//	L"DLL 'jector",
-	//	WS_OVERLAPPEDWINDOW,
-	//	100,
-	//	100,
-	//	1280, // Width
-	//	800,  // Height
-	//	nullptr,
-	//	nullptr,
-	//	wc.hInstance,
-	//	nullptr
-	//);
-
-	HWND hwnd = CreateWindowEx(
-		WS_EX_TOOLWINDOW,
+	HWND hwnd = ::CreateWindowW(
 		wc.lpszClassName,
 		L"DLL Injector",
-		WS_POPUP | WS_VISIBLE,
-		100, 100, 1280, 800,
+		WS_OVERLAPPEDWINDOW,
+		100,
+		100,
+		(int)(1280 * main_scale),
+		(int)(800 * main_scale),
 		nullptr,
 		nullptr,
 		wc.hInstance,
 		nullptr
 	);
-
-	g_hwnd = hwnd; // Added to support a close button in the ImGui window
 
 	if (!CreateDeviceD3D(hwnd)) {
 		CleanupDeviceD3D();
@@ -87,8 +73,7 @@ int main(int, char**) {
 		return 1;
 	}
 
-	//::ShowWindow(hwnd, SW_SHOWDEFAULT);  
-	//::ShowWindow(hwnd, SW_HIDE);
+	::ShowWindow(hwnd, SW_SHOWDEFAULT);  
 	::UpdateWindow(hwnd);
 
 
@@ -98,16 +83,23 @@ int main(int, char**) {
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
-	ImFont* g_fontJetBrains = io.Fonts->AddFontFromFileTTF("external/fonts/JetBrainsMono-Light.ttf", 16.0f);
-	ImFont* g_fontCascadiaCode = io.Fonts->AddFontFromFileTTF("external/fonts/CascadiaCode.ttf", 16.0f);
-	ImFont* g_fontProggy = io.Fonts->AddFontFromFileTTF("external/fonts/ProggyCleanSZNerdFont-Regular.ttf", 16.0f);
+	// --- Fonts --- //
+
+	g_fontJetBrains = io.Fonts->AddFontFromFileTTF("external/fonts/JetBrainsMono-Light.ttf", 18.0f);
+	g_fontCascadiaCode = io.Fonts->AddFontFromFileTTF("external/fonts/CascadiaCode.ttf", 18.0f);
+	g_fontProggy = io.Fonts->AddFontFromFileTTF("external/fonts/ProggyCleanSZNerdFont-Regular.ttf", 18.0f);
+
+	// ------------ //
 
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-	// ImGui custom style
+	// --- ImGui custom style --- //
 
 	ImGuiStyle* style = &ImGui::GetStyle();
+
+	style->ScaleAllSizes(main_scale);
+	style->FontScaleDpi = main_scale;
 
 	style->WindowMinSize = ImVec2(160, 20);
 	style->FramePadding = ImVec2(4, 2);
@@ -188,6 +180,8 @@ int main(int, char**) {
 
 	ImVec4 clear_color = ImVec4(0.16f, 0.16f, 0.21f, 1.00f); // matches WindowBg
 
+	// --------------------------------- //
+
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
 	
@@ -202,7 +196,7 @@ int main(int, char**) {
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		RenderUI(hwnd); // Changed to support a close button in the ImGui window instead of the Win32 window
+		RenderUI();
 
 		g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
 		g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, (float*)&clear_color);
