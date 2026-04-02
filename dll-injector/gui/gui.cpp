@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <algorithm>
 #include <commdlg.h>
+#include <thread>
+#include <chrono>
 
 #pragma comment(lib, "comdlg32.lib")
 
@@ -14,6 +16,9 @@
 #include "inject.h"
 #include "handles.h"
 #include "utils.h"
+
+#define IM_CLAMP(V, MN, MX)     ((V) < (MN) ? (MN) : (V) > (MX) ? (MX) : (V))
+
 
 void RenderUI() {
 
@@ -32,12 +37,16 @@ void RenderUI() {
 
     static std::vector<ProcessInfo> processes;
     static DWORD g_selectedPid = 0;
+    static std::wstring g_dllPath = L"";
     static char g_searchBuf[128] = "";
+   
     static bool g_loaded = false;
     static bool g_clicked = false;
     static bool g_showlog = false;
-    static std::wstring g_dllPath = L"";
+    static bool g_inject = false;
    
+    static float g_progressDir = 1.0f;
+    static float g_progress = 0.0f;
 
     // Main window
 
@@ -167,11 +176,13 @@ void RenderUI() {
                         // --- Process Injection --- //
                         if (ImGui::Button("Execute")) {
 
-                            ImGui::SameLine();
-                            //ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(0.0f, 0.0f), "Running.."); // Not necessary
+                            g_inject = true;
+                            g_progress = 0.0f;
+                            g_progressDir = 1.0f;
 
                             Log(LogLevel::Info, "Selected " + std::string(WideToUtf8(g_dllPath).c_str()) + " to inject");
                             Log(LogLevel::Info, "Attempting to inject into PID: [" + std::to_string(sel.pid) + "] " + sel.name);
+                            
                             HANDLE hProcess = nullptr;
 
                             if (!GetRemoteProcessHandle(sel.pid, &hProcess)) {
@@ -181,7 +192,17 @@ void RenderUI() {
                             if (!InjectDllToRemoteProcess(hProcess, (LPWSTR)g_dllPath.c_str())) {
                                 return;
                             }
+                            // ---------------------- //
                         }
+                        if (g_inject) {
+                            g_progress += g_progressDir * 0.8f * ImGui::GetIO().DeltaTime; // progress bar "speed"
+                            if (g_progress >= 1.0f) {
+                                g_progress = 1.0f; // clamp at 1.0
+                                g_inject = false;
+                            }
+                            ImGui::ProgressBar(g_progress, ImVec2(0.0f, 0.0f));
+                        }
+
                     }
                     ImGui::EndChild();
                 }
@@ -219,67 +240,13 @@ void RenderUI() {
             if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
                 ImGui::SetScrollHereY(1.0f);
 
-            
             ImGui::EndChild();
             ImGui::PopFont();
             ImGui::PopStyleColor();
 
             ImGui::EndTabItem();
         }
- 
-
     }
     ImGui::EndTabBar();
-
-
-
-    // --------------------------------------- //
-
-
-    // --- Logger Window --- //
-
-    // New window for the logger, opens with g_showlog
-    // Maybe move to a tab instead of a new window
-
-
-//    if (g_showlog) {
-//        ImGui::SetNextWindowSize(ImVec2(600, 200), ImGuiCond_FirstUseEver);
-//        ImGui::SetNextWindowPos(ImVec2(20, 500), ImGuiCond_FirstUseEver);
-//
-//        ImGui::Begin("Log", &g_showlog);
-//
-//        if (ImGui::Button("Clear"))
-//            ClearLog();
-//
-//        ImGui::SameLine();
-//        ImGui::TextDisabled("%d entries", (int)GetLog().size());
-//
-//        ImGui::Separator();
-//
-//        ImGui::BeginChild("Logger", ImVec2(0, 0), ImGuiChildFlags_None);
-//
-//        for (const auto& msg : GetLog()) {
-//            if (msg.find("[+]") == 0)
-//                ImGui::TextColored(ImVec4(0.31f, 0.98f, 0.48f, 1.0f), "%s", msg.c_str()); //  Green
-//            else if (msg.find("[!]") == 0)
-//                ImGui::TextColored(ImVec4(1.00f, 0.33f, 0.33f, 1.0f), "%s", msg.c_str()); // Red
-//            else if (msg.find("[~]") == 0)
-//                ImGui::TextColored(ImVec4(1.00f, 0.72f, 0.42f, 1.0f), "%s", msg.c_str()); // Orangish
-//            else
-//                ImGui::Text("%s", msg.c_str()); // No colour
-//        }
-//        // auto scroll to bottom
-//        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-//            ImGui::SetScrollHereY(1.0f);
-//
-//        ImGui::EndChild();
-//        ImGui::End();
-//    }
-//
-// 
-// 
-
-// --------------------------------------- //
-
 	ImGui::End();
 }
